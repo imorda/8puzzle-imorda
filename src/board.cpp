@@ -15,10 +15,11 @@ Board Board::create_goal(const unsigned size)
 
 Board Board::create_random(const unsigned size)
 {
-    std::random_device rd;
+    thread_local std::random_device rd;
+    std::mt19937 engine(rd());  // NOLINT
     std::vector<unsigned> field_1d(size * size);
     std::iota(field_1d.begin(), field_1d.end(), 0);
-    std::shuffle(field_1d.begin(), field_1d.end(), rd);
+    std::shuffle(field_1d.begin(), field_1d.end(), engine);
 
     std::vector<std::vector<unsigned>> field_2d(size);
 
