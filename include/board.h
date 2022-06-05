@@ -11,7 +11,7 @@
 
 class MovedBoard;
 
-template <typename T, typename R>
+template <typename T>
 class ProxyRow
 {
 private:
@@ -25,7 +25,7 @@ public:
     {
     }
 
-    R operator[](std::size_t j) const
+    auto operator[](std::size_t j) const
     {
         return m_object.get(m_row, j);
     }
@@ -57,7 +57,7 @@ public:
 
     virtual unsigned get(unsigned x, unsigned y) const = 0;
     bool is_goal() const;
-    ProxyRow<BoardProps, unsigned> operator[](unsigned i) const;
+    ProxyRow<BoardProps> operator[](unsigned i) const;
     unsigned hamming() const;
     unsigned manhattan() const;
     std::size_t hash() const;

@@ -21,11 +21,13 @@ Solver::Solution Solver::solve(const Board & board)
 
 std::shared_ptr<MovedBoard> Solver::a_star(const Board & board)
 {
+    const unsigned k = board.size() > 4 ? 39 : 3;
+
     std::multimap<std::pair<unsigned, unsigned>, std::shared_ptr<MovedBoard>> current_moves; // Maps {f(x), sum of g(x)} to {Board itself, prev.state delta}
     std::unordered_set<std::size_t> used_states;                                             // Maps Board to prev.state delta
 
     auto dynamic_brd = std::shared_ptr<Board>(new Board(board));
-    current_moves.emplace(std::make_pair(board.manhattan() * 3, 0), BoardProps::move_relative(dynamic_brd, 0, 0));
+    current_moves.emplace(std::make_pair(board.manhattan() * k, 0), BoardProps::move_relative(dynamic_brd, 0, 0));
 
     while (!current_moves.empty()) {
         auto cur_node = current_moves.extract(current_moves.begin());
@@ -37,7 +39,7 @@ std::shared_ptr<MovedBoard> Solver::a_star(const Board & board)
             std::shared_ptr<MovedBoard> new_pos = BoardProps::move_relative(cur_node.mapped(), move.first, move.second);
             if (new_pos && used_states.find(new_pos->hash()) == used_states.end()) {
                 current_moves.emplace(std::make_pair(
-                                              cur_node.key().second + 1 + new_pos->manhattan() * 3,
+                                              cur_node.key().second + 1 + new_pos->manhattan() * k,
                                               cur_node.key().second + 1),
                                       std::move(new_pos));
             }

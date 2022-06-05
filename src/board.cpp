@@ -236,9 +236,9 @@ unsigned BoardProps::count_num_len(unsigned int num)
     }
     return counter;
 }
-ProxyRow<BoardProps, unsigned int> BoardProps::operator[](unsigned int i) const
+ProxyRow<BoardProps> BoardProps::operator[](unsigned int i) const
 {
-    return ProxyRow<BoardProps, unsigned>(*this, i);
+    return ProxyRow<BoardProps>(*this, i);
 }
 std::size_t BoardProps::bin_pow(std::size_t base, std::size_t exp)
 {
@@ -271,10 +271,38 @@ unsigned int MovedBoard::get(unsigned int x, unsigned int y) const
 }
 MovedBoard::MovedBoard(std::shared_ptr<BoardProps> parent, const std::pair<unsigned, unsigned> new_blank)
     : BoardProps(new_blank,
-                 parent->manhattan() - calculate_single_manhattan(new_blank.first, new_blank.second, (*parent)[new_blank.first][new_blank.second], parent->size()) + calculate_single_manhattan(parent->blank_pos().first, parent->blank_pos().second, (*parent)[new_blank.first][new_blank.second], parent->size()),
-                 parent->hamming() - calculate_single_hamming(new_blank.first, new_blank.second, (*parent)[new_blank.first][new_blank.second], parent->size()) - calculate_single_hamming(parent->blank_pos().first, parent->blank_pos().second, (*parent)[parent->blank_pos().first][parent->blank_pos().second], parent->size()) + calculate_single_hamming(parent->blank_pos().first, parent->blank_pos().second, (*parent)[new_blank.first][new_blank.second], parent->size()) + calculate_single_hamming(new_blank.first, new_blank.second, (*parent)[parent->blank_pos().first][parent->blank_pos().second], parent->size()),
+                 parent->manhattan() -
+                         calculate_single_manhattan(new_blank.first,
+                                                    new_blank.second,
+                                                    (*parent)[new_blank.first][new_blank.second],
+                                                    parent->size()) +
+                         calculate_single_manhattan(parent->blank_pos().first,
+                                                    parent->blank_pos().second,
+                                                    (*parent)[new_blank.first][new_blank.second],
+                                                    parent->size()),
+                 parent->hamming() -
+                         calculate_single_hamming(new_blank.first,
+                                                  new_blank.second,
+                                                  (*parent)[new_blank.first][new_blank.second],
+                                                  parent->size()) -
+                         calculate_single_hamming(parent->blank_pos().first,
+                                                  parent->blank_pos().second,
+                                                  (*parent)[parent->blank_pos().first][parent->blank_pos().second],
+                                                  parent->size()) +
+                         calculate_single_hamming(parent->blank_pos().first,
+                                                  parent->blank_pos().second,
+                                                  (*parent)[new_blank.first][new_blank.second],
+                                                  parent->size()) +
+                         calculate_single_hamming(new_blank.first,
+                                                  new_blank.second,
+                                                  (*parent)[parent->blank_pos().first][parent->blank_pos().second],
+                                                  parent->size()),
                  parent->is_solvable(),
-                 parent->hash() - (*parent)[new_blank.first][new_blank.second] * bin_pow(HASH_P, new_blank.first * parent->size() + new_blank.second) + (*parent)[new_blank.first][new_blank.second] * bin_pow(HASH_P, parent->blank_pos().first * parent->size() + parent->blank_pos().second))
+                 parent->hash() -
+                         (*parent)[new_blank.first][new_blank.second] *
+                                 bin_pow(HASH_P, new_blank.first * parent->size() + new_blank.second) +
+                         (*parent)[new_blank.first][new_blank.second] *
+                                 bin_pow(HASH_P, parent->blank_pos().first * parent->size() + parent->blank_pos().second))
     , m_parent(std::move(parent))
     , m_size(m_parent->size())
 {
